@@ -67,7 +67,7 @@ class MinCostMaxFlow {
   cost_type cost;
 
   cost_type get_cost(int id) {
-    cost_type res = es[id].w + phi[es[id].to] - phi[es[id ^ 1].to];
+    cost_type res = es[id].w - phi[es[id].to] + phi[es[id ^ 1].to];
     assert(es[id].c > 0 && res >= 0);
     return res;
   }
@@ -85,21 +85,21 @@ class MinCostMaxFlow {
     d[s] = 0;
 
     priority_queue<pair<cost_type, int>> q;
-    q.push({d[s], s});
+    q.push({-d[s], s});
 
     while (!q.empty()) {
       auto x = q.top();
       q.pop();
 
       int id = x.second;
-      if (x.first != d[id]) continue;
+      if (x.first != -d[id]) continue;
 
       for (int e = head[id]; e != -1; e = es[e].next) {
         if (es[e].c == 0) continue;
         int to = es[e].to;
         if (d[to] > d[id] + get_cost(e)) {
           d[to] = d[id] + get_cost(e);
-          q.push({d[to], to});
+          q.push({-d[to], to});
           pe[to] = e;
         }
       }
